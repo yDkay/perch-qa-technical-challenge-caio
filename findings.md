@@ -1,0 +1,20 @@
+- Sorting does not meet the expected behavior, the 199 item stays always in the center
+- Phone number accepts other characters if the criterea for the ammount of numbers is fullfiled
+- Also, those other characters do not count towards the ammount that is required (10-15 digits)
+- City, state and country do not accept special characters, and many of those around the world do possess diferent characters or letters from other languages that should be accepted (ç,^,~, etc)
+- email should accept permitted special characters ! # $ % & ' \* + - / = ? ^ \_ ` { | } ~
+- Expected result for !:
+  • Accept if following RFC 5322 strictly
+  • Reject if using a stricter regex, which is common in production apps
+- Payments: Card holder name do not accept diferent characters or letters (ç,^,~, etc) when it should.
+- Expiry date cannot accept past dates.
+- Total value on the profile page does not display the acctual total (it does not multiply the amount of the same item into the total)
+- Order history are saved/consistant after page reload, cart isnt (Maybe thats expected since I am in a local dev setup)
+- Name and Email field on profile can be eddited to be as long as I want, there should be a limit. Those fields should also accept the special characters that Name fields and email are expected to accept.
+- Responsiviness is almost non existend in mobile view.
+- Zip code should allow more characters since zip codes from other countries could be of diferent sizes.
+- Zip codes should also accept letters, spaces and some special characters (space, hyphen, slash), but not symbols like: @, !, \* or ~.
+- Classic white sneakers are... Brown?
+- After the payment page, if I return the page and fill up the fields again and try to do another purchase, I can do it normally, but it will show empty on the profile, this purchase should not be allowed.
+- I can access /checkout address, payment and success at any time if I type the URL.
+- If I go to the Elements of the page, and change the value of the selector itself, I can chose any character (Numbers scale the total price, and NaN gives a NaN value)
