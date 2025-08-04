@@ -27,8 +27,10 @@
     "typescript": "^5.1.6"
   },
   "cypress-cucumber-preprocessor": {
+    "step_definitions": "cypress/e2e/step_definitions",
     "nonGlobalStepDefinitions": false,
-    "stepDefinitions": "cypress/e2e/step_definitions"
+    "stepDefinitions": "cypress/e2e/step_definitions",
+    "failFast": false
   },
   "browserslist": {
     "production": [

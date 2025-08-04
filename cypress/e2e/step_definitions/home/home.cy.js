@@ -1,5 +1,3 @@
-import { Given, When, Then, And } from "cypress-cucumber-preprocessor/steps";
-
 Given("I am on the homepage", () => {
   cy.visitHomePage();
 });

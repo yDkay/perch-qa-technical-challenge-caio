@@ -3,7 +3,7 @@ describe("Homepage Tests", () => {
     cy.visitHomePage();
   });
 
-  it.only("Should render all main UI elements", () => {
+  it("Should render all main UI elements", () => {
     cy.verifyHomeContent();
     cy.verifyHomeButtons();
   });

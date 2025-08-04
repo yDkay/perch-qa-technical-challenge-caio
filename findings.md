@@ -18,3 +18,4 @@
 - After the payment page, if I return the page and fill up the fields again and try to do another purchase, I can do it normally, but it will show empty on the profile, this purchase should not be allowed.
 - I can access /checkout address, payment and success at any time if I type the URL.
 - If I go to the Elements of the page, and change the value of the selector itself, I can chose any character (Numbers scale the total price, and NaN gives a NaN value)
+- Handling error messages on /checkout/payments being super inconsistent.

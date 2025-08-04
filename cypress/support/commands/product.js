@@ -1,10 +1,3 @@
-// I normally would not use single use commands since they would be used only once probably
-// But since I am doing both plain cypress vs cucumber I will create custom commands for every scenario
-
-Cypress.Commands.add("visitProductPage", (product) => {
-  cy.visit(`/product/${product}`);
-});
-
 Cypress.Commands.add("verifyProduct", (name, price, description) => {
   cy.get('[data-testid="product-image"]').should("be.visible");
   cy.get('[data-testid="product-name"]')
@@ -22,21 +15,40 @@ Cypress.Commands.add("verifyProduct", (name, price, description) => {
   cy.get('[data-testid="add-to-cart"]')
     .should("be.visible")
     .and("have.text", "Add to Cart");
-  cy.get('[data-testid="back-to-products"]')
-    .should("be.visible")
-    .and("contain.text", "Back to Products");
 });
 
-/* Cypress.Commands.add("verifyItem", (quantity, id) => {
+Cypress.Commands.add("verifyBackToProducts", (id) => {
+  if (id < 1 || id > 3) {
+    throw new Error(`Invalid product id: ${id} — stopping test`);
+  }
+  cy.get('[data-testid="back-to-products"]')
+    .should("be.visible")
+    .and("contain.text", "Back to Products")
+    .click();
+  cy.url().should("eq", "http://localhost:3000/");
+});
+
+Cypress.Commands.add("visitManualURL", (id) => {
+  cy.visit(`/product/${id}`);
+  if (id < 1 || id > 3) {
+    cy.url().should("eq", "http://localhost:3000/");
+    return;
+  }
+  cy.url().should("include", `/product/${id}`);
+});
+
+Cypress.Commands.add("verifyItem", (id, quantity) => {
   let index = quantity - "1";
   cy.get('[data-testid="quantity-selector"]').select(index);
   cy.get('[data-testid="add-to-cart"]').click();
   cy.get(`[data-testid="quantity-${id}"]`)
     .invoke("val")
     .should("equal", quantity);
+  cy.reload();
+  cy.get('[data-testid="empty-cart"]')
+    .should("be.visible")
+    .and("contain.text", "Your cart is empty");
+  cy.get('[data-testid="empty-cart"] > [data-testid="continue-shopping"]')
+    .should("be.visible")
+    .and("have.text", "Continue Shopping");
 });
-
-Cypress.Commands.add("verifyQuantity", (id, quantity) => {});
-
-Cypress.Commands.add("verifySubtotal", () => {});
- */

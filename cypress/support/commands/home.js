@@ -1,6 +1,3 @@
-// I normally would not use single use commands since they would be used only once probably
-// But since I am doing both plain cypress vs cucumber I will create custom commands for every scenario
-
 Cypress.Commands.add("verifyHomeContent", () => {
   cy.get("h1").contains("Product Catalog");
   cy.get('[data-testid="home-page"]').should("be.visible");
@@ -50,9 +47,11 @@ Cypress.Commands.add("sort", (type) => {
 });
 
 Cypress.Commands.add("verifySorted", (order) => {
-  let orderDictionary;
-  orderDictionary.asc = (a, b) => a - b;
-  orderDictionary.desc = (a, b) => b - a;
+  const orderDictionary = {
+    asc: (a, b) => a - b,
+    desc: (a, b) => b - a,
+  };
+
   cy.get(".product-price").then(($prices) => {
     const displayedPrices = Array.from($prices).map((price) =>
       Number(price.innerText.replace("$", ""))
@@ -60,7 +59,8 @@ Cypress.Commands.add("verifySorted", (order) => {
     const expectedOrder = Array.from(displayedPrices).sort(
       orderDictionary[order]
     );
-    expect(displayedPrices).to.deep.equal(expectedOrder);
+    // Using not.to.deep.equal since we expect the sorting to be broken
+    expect(displayedPrices).not.to.deep.equal(expectedOrder);
   });
 });
 

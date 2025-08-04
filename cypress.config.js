@@ -20,10 +20,7 @@ module.exports = defineConfig({
       on("file:preprocessor", cucumber());
       return config;
     },
-    specPattern: [
-      "cypress/e2e/step_definitions/*.feature",
-      "cypress/e2e/plain/**/*.cy.js",
-    ],
+    specPattern: ["cypress/e2e/**/*.feature", "cypress/e2e/plain/**/*.cy.js"],
     baseUrl: "http://localhost:3000/",
     supportFile: "cypress/support/e2e.js",
     video: false,

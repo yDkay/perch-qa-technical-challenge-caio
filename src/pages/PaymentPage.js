@@ -146,40 +146,46 @@ const PaymentPage = () => {
         <div className="product-info">
           <h1 className="product-name" aria-label="Payment Information">Payment Information</h1>
           
-          <form onSubmit={handleSubmit} data-testid="payment-form" className="address-form">
-            <div className="form-group">
-              <label htmlFor="cardHolder">Card Holder Name</label>
-              <input
-                type="text"
-                id="cardHolder"
-                name="cardHolder"
-                data-testid="cardholder-input"
-                className={`address-input ${errors.cardHolder && touched.cardHolder ? 'error' : ''}`}
-                aria-label="Card holder name"
-                value={payment.cardHolder}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.cardHolder && touched.cardHolder && <span className="error-message">{errors.cardHolder}</span>}
+           <form onSubmit={handleSubmit} data-testid="payment-form" className="address-form">
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="cardHolder">Card Holder Name</label>
+                <input
+                  type="text"
+                  id="cardHolder"
+                  name="cardHolder"
+                  data-testid="cardholder-input"
+                  className={`address-input ${errors.cardHolder && touched.cardHolder ? 'error' : ''}`}
+                  aria-label="Card holder name"
+                  value={payment.cardHolder}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  required
+                />
+                {errors.cardHolder && touched.cardHolder && <span className="error-message">{errors.cardHolder}</span>}
+              </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="cardNumber">Card Number</label>
-              <input
-                type="text"
-                id="cardNumber"
-                name="cardNumber"
-                data-testid="card-number-input"
-                className={`address-input ${errors.cardNumber && touched.cardNumber ? 'error' : ''}`}
-                aria-label="Card number"
-                value={payment.cardNumber}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                maxLength="19"
-                required
-              />
-              {errors.cardNumber && touched.cardNumber && <span className="error-message">{errors.cardNumber}</span>}
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="cardNumber">Card Number</label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  name="cardNumber"
+                  data-testid="card-number-input"
+                  className={`address-input ${errors.cardNumber && touched.cardNumber ? 'error' : ''}`}
+                  aria-label="Card number"
+                  value={payment.cardNumber}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  maxLength="19"
+                  required
+                />
+                {errors.cardNumber && touched.cardNumber && <span className="error-message">{errors.cardNumber}</span>}
+              </div>
             </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="expiryDate">Expiry Date</label>
@@ -199,6 +205,9 @@ const PaymentPage = () => {
                 />
                 {errors.expiryDate && touched.expiryDate && <span className="error-message">{errors.expiryDate}</span>}
               </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="cvv">CVV</label>
                 <input
@@ -217,6 +226,7 @@ const PaymentPage = () => {
                 {errors.cvv && touched.cvv && <span className="error-message">{errors.cvv}</span>}
               </div>
             </div>
+
             <button 
               type="submit" 
               className="add-to-cart-button"

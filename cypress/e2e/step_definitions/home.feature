@@ -11,9 +11,9 @@ Scenario Outline: Verify product <id> card details
   Then I should verify product <id> card with name "<name>", price "<price>" and description "<description>"
 
 Examples:
-  | id | name                    | price   | description                                          |
+  | id | name                    | price   | description                                              |
   | 1  | Classic White Sneakers  | $79.99  | Comfortable and stylish white sneakers for everyday wear |
-  | 2  | Premium Leather Watch   | $149.99 | Elegant leather watch with premium craftsmanship     |
+  | 2  | Premium Leather Watch   | $149.99 | Elegant leather watch with premium craftsmanship         |
   | 3  | Wireless Headphones     | $199.99 | High-quality wireless headphones with noise cancellation |
 
 Scenario Outline: Search for products by term
