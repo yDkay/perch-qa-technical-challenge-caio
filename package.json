@@ -23,13 +23,14 @@
     "cypress": "^14.0.0",
     "cypress-cucumber-preprocessor": "^4.3.1",
     "cypress-mochawesome-reporter": "^3.8.2",
+    "mochawesome-report-generator": "^6.2.0",
     "multiple-cucumber-html-reporter": "^3.9.2",
     "typescript": "^5.1.6"
   },
   "cypress-cucumber-preprocessor": {
-    "step_definitions": "cypress/integration/step_definitions",
+    "step_definitions": "cypress/e2e/step_definitions",
     "nonGlobalStepDefinitions": false,
-    "stepDefinitions": "cypress/integration/step_definitions",
+    "stepDefinitions": "cypress/e2e/step_definitions",
     "failFast": false
   },
   "browserslist": {
