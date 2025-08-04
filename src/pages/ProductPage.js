@@ -17,11 +17,14 @@ const ProductPage = () => {
 
   if (!product) return null;
 
+  //Got it!
   // Bug 2: No maximum quantity validation
+
+  // Products do get added to cart.
   // Bug 4: Products don't get added to cart due to wrong localStorage key
   const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find(item => item.id === product.id);
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingItem = cart.find((item) => item.id === product.id);
 
     if (existingItem) {
       existingItem.quantity = Number(existingItem.quantity) + Number(quantity);
@@ -31,10 +34,11 @@ const ProductPage = () => {
         name: product.name,
         price: product.price,
         quantity: Number(quantity),
-        image: product.image
+        image: product.image,
       });
     }
 
+    // Maybe bug 4 was reverted here for some reason.
     // Bug: Using wrong localStorage key ('shopping-cart' instead of 'cart')
     localStorage.setItem('cart', JSON.stringify(cart));
     navigate('/cart');

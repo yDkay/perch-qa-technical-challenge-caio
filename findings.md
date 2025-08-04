@@ -1,21 +1,203 @@
-- Sorting does not meet the expected behavior, the 199 item stays always in the center
-- Phone number accepts other characters if the criterea for the ammount of numbers is fullfiled
-- Also, those other characters do not count towards the ammount that is required (10-15 digits)
-- City, state and country do not accept special characters, and many of those around the world do possess diferent characters or letters from other languages that should be accepted (ç,^,~, etc)
-- email should accept permitted special characters ! # $ % & ' \* + - / = ? ^ \_ ` { | } ~
-- Expected result for !:
-  • Accept if following RFC 5322 strictly
-  • Reject if using a stricter regex, which is common in production apps
-- Payments: Card holder name do not accept diferent characters or letters (ç,^,~, etc) when it should.
-- Expiry date cannot accept past dates.
-- Total value on the profile page does not display the acctual total (it does not multiply the amount of the same item into the total)
-- Order history are saved/consistant after page reload, cart isnt (Maybe thats expected since I am in a local dev setup)
-- Name and Email field on profile can be eddited to be as long as I want, there should be a limit. Those fields should also accept the special characters that Name fields and email are expected to accept.
-- Responsiviness is almost non existend in mobile view.
-- Zip code should allow more characters since zip codes from other countries could be of diferent sizes.
-- Zip codes should also accept letters, spaces and some special characters (space, hyphen, slash), but not symbols like: @, !, \* or ~.
-- Classic white sneakers are... Brown?
-- After the payment page, if I return the page and fill up the fields again and try to do another purchase, I can do it normally, but it will show empty on the profile, this purchase should not be allowed.
-- I can access /checkout address, payment and success at any time if I type the URL.
-- If I go to the Elements of the page, and change the value of the selector itself, I can chose any character (Numbers scale the total price, and NaN gives a NaN value)
-- Handling error messages on /checkout/payments being super inconsistent.
+# Findings
+
+_All tests run on macOS 15.5 • Chrome 125.0 • Node 18.0.0_  
+**Severity**: Critical ▸ Major ▸ Minor ▸ Info
+
+---
+
+This project is structured in **two identical test suites**:
+
+1. **Plain Cypress** – my preferred approach (simpler, faster feedback).
+2. **Cucumber/Gherkin on Cypress** – provided because the challenge requires it.
+
+Having both lets you the reviewer compare styles side‑by‑side.
+
+## _Note:_ I tweaked a small piece of the **`/checkout/payment`** code to standardise error‑message handling while debugging the inconsistency mentioned below.
+
+## Home Page (`/`)
+
+- **Sorting misbehaves (199 price stays mid‑list)** — **Major**
+
+  - **Steps:** Click sort ascending / descending
+  - **Expected:** Full resort of product cards
+  - **Actual:** Item with price 199 remains in centre
+  - **Suggestion:** Re‑compute list after state update
+
+- **Mobile layout breaks** — **Minor**
+  - **Steps:** DevTools mobile view
+  - **Expected:** Responsive grid
+  - **Actual:** Cards overflow viewport
+  - **Suggestion:** Same media‑query fixes as Cart
+
+---
+
+## Product Page (`/product/:id`)
+
+- **“Classic White Sneakers” image is brown** — **Minor**
+
+  - **Steps:** Open product 1
+  - **Expected:** White shoes
+  - **Actual:** Brown image shown
+  - **Suggestion:** Replace asset
+
+- **Quantity select tampering same as Cart** — **Critical**
+
+  - **Steps:** DevTools change option value
+  - **Expected:** Clamp 1‑5
+  - **Actual:** NaN or huge total
+  - **Suggestion:** Input validation
+
+- **Mobile layout issues** — **Minor**
+  - **Steps:** Mobile viewport
+  - **Expected:** Responsive design
+  - **Actual:** Overflow
+  - **Suggestion:** Media queries
+
+---
+
+## Cart Page (`/cart`)
+
+- **Quantity select tampering causes NaN / overflow** — **Critical**
+
+  - **Steps:** In DevTools, change `<option value>` to `abc` or `999`
+  - **Expected:** Value clamped (1‑5) and sanitised
+  - **Actual:** Total shows `NaN` or huge price
+  - **Suggestion:** Validate value on change and on backend
+
+- **Poor mobile responsiveness** — **Minor**
+  - **Steps:** View cart on iPhone XR in DevTools
+  - **Expected:** Layout adapts; no overflow
+  - **Actual:** Horizontal scroll, clipped text
+  - **Suggestion:** Add media queries / flex‑wrap
+
+---
+
+## Address Page (`/checkout/address`)
+
+- **Phone field accepts a variety of characters** — **Major**
+
+  - **Steps:** Enter `+55‑(45)‑9‑9999‑9999` in _Phone_ field or
+  - **Steps:** Enter `0123456789asdasdasdasd` in _Phone_ field or
+  - **Steps:** Enter `123123123123çÇ!@().>;:` in _Phone_ field or
+  - **Expected:** Only digits or properly formatted phone numbers should be allowed, non‑digits either blocked or counted toward length
+  - **Actual:** Field validates as long as 10‑15 digits exist, extra characters are ignored
+  - **Suggestion:** Strip non‑digits for storage but validate raw input or auto‑format visibly
+
+- **City / State / Country reject diacritics & international letters** — **Major**
+
+  - **Steps:** Type `São Paulo` or `México` in respective fields
+  - **Expected:** Accept Unicode letters with accents/cedilla/tilde
+  - **Actual:** Validation error
+  - **Suggestion:** Expand regex to use Unicode letter class (`\p{L}`)
+
+- **Street accepts an infinite amount of characters** — **Major**
+
+  - **Steps:** Enter 300 char worth of characters in respective fields
+  - **Expected:** Give an error: 'Street must be 5-XX (Not an infinite one) characters'
+  - **Actual:** Allows this big string
+  - **Suggestion:** Add maxlength validation
+
+- **Email field blocks legal RFC 5322 specials** — **Major**
+
+  - **Steps:** Submit `test+alias@example.com` or `first.last!tag@example.com`
+  - **Expected:** Valid email accepted under RFC 5322
+  - **Actual:** Rejected as invalid
+  - **Suggestion:** Replace custom regex with robust email‑parser library
+
+- **ZIP code overly strict (digits‑only, fixed length)** — **Major**
+
+  - **Steps:** Enter `SW1A 1AA` or `75008‑123`
+  - **Expected:** Accept global formats (letters, digits, space, hyphen) 3‑10 chars
+  - **Actual:** Rejected
+  - **Suggestion:** Allow `[A‑Z0-9\- ]{3,10}`
+
+- **Page accessible without cart data** — **Critical**
+  - **Steps:** Navigate directly to `/checkout/address` in new tab
+  - **Expected:** Redirect to Cart or Home if cart empty
+  - **Actual:** Address form loads with empty state
+  - **Suggestion:** Add route guard verifying cart not empty
+
+---
+
+## Payment Page (`/checkout/payment`)
+
+- **Card‑holder name blocks diacritics / hyphen** — **Major**
+
+  - **Steps:** Type `José da‑Silva`
+  - **Expected:** Accepted
+  - **Actual:** Validation error
+  - **Suggestion:** Allow `\p{L}[' -]` pattern
+
+- **Error messages inconsistent across fields** — **Major**
+
+  - **Steps:** Submit empty form; compare messages
+  - **Expected:** Uniform copy and styling
+  - **Actual:** Copy and positioning differ
+  - **Suggestion:** Centralise error component
+
+- **Page accessible directly without address step** — **Critical**
+
+  - **Steps:** Navigate to `/checkout/payment` with empty flow
+  - **Expected:** Redirect to Address
+  - **Actual:** Payment form loads
+  - **Suggestion:** Route guard check
+
+- **Repeat purchase after back‑navigation creates empty order** — **Critical**
+
+  - **Steps:** After success page, click back, edit data, pay again
+  - **Expected:** Block duplicate or record order correctly
+  - **Actual:** Profile shows blank order
+  - **Suggestion:** Reset checkout context post‑success
+
+- **Expiry date validation missing** — **Major**
+  - **Steps:** Enter `01/23` in _Expiry Date_ field
+  - **Expected:** Field reject dates in the past (month/year earlier than current)
+  - **Actual:** Past date accepted and purchase proceeds
+  - **Suggestion:** Add runtime check comparing MM/YY against current date before allowing submission
+
+---
+
+## Success Page (`/checkout/success`)
+
+- **Page accessible directly via URL** — **Critical**
+  - **Steps:** Open `/checkout/success` without order
+  - **Expected:** Redirect or 404
+  - **Actual:** Success page shows random number order
+  - **Suggestion:** Route guard & 404 for invalid access
+
+---
+
+## Profile Page (`/profile`)
+
+- **Total value ignores quantity multiplier** — **Critical**
+
+  - **Steps:** Buy 2× same item, open Profile
+  - **Expected:** Total = price × 2
+  - **Actual:** Shows single‑item price
+  - **Suggestion:** Fix calculation
+
+- **Name & Email unlimited length / reject valid specials** — **Major**
+
+  - **Steps:** Enter 300‑char name or email or a valid name like `João`
+  - **Expected:** Max length (≤50) and specials accepted
+  - **Actual:** Unlimited & specials rejected
+  - **Suggestion:** Add maxlength and relaxed regex
+
+- **Mobile layout issues** — **Minor**
+  - **Steps:** Mobile view
+  - **Expected:** Responsive
+  - **Actual:** Scroll required
+  - **Suggestion:** Layout tweaks
+
+---
+
+## Order History Page (`/profile#orders`)
+
+- **Second purchase saved as blank row** — **Critical**
+
+  - **Steps:** Finish purchase → Back → alter data → purchase again → open Orders
+  - **Expected:** Second order with details
+  - **Actual:** Empty order card rendered
+  - **Suggestion:** Prevent duplicate flow; validate order object before save
+
+---

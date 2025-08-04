@@ -1,3 +1,4 @@
+import "cypress-cucumber-preprocessor/steps";
 import "./commands";
 import "./commands/home";
 import "./commands/cart";

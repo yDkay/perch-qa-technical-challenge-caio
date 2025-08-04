@@ -62,7 +62,7 @@ Cypress.Commands.add("assertOrderTotalIgnoresQuantity", () => {
           .invoke("text")
           .then((text) => {
             const shown = parseFloat(text.replace(/[^0-9.-]+/g, ""));
-            // Assert they’re not equal (known bug)
+            // Assert they’re not equal (from: '// Bug: Calculate total without considering quantity')
             expect(shown).to.not.deep.equal(
               parseFloat(expected),
               `Known bug: shown total (${shown}) should not equal expected (${expected}) when qty > 1`
